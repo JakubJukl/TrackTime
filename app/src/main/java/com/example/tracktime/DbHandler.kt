@@ -41,10 +41,11 @@ class DbHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, 
         }
         database.close()
     }
-    fun readData(): MutableList<Record> {
+    fun readData(month : String): MutableList<Record> {
         val list: MutableList<Record> = ArrayList()
         val db = this.readableDatabase
-        val query = "Select * from $TABLENAME"
+        val pattern = "____-$month-%"
+        val query = "Select * from $TABLENAME WHERE $COL_START LIKE '$pattern'"
         val result = db.rawQuery(query, null)
         if (result.moveToFirst()) {
             do {
@@ -61,6 +62,10 @@ class DbHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, 
         result.close()
         db.close()
         return list
+    }
+
+    fun readData(): MutableList<Record> {
+       return readData("%")
     }
 
     fun editRecordLeaveTime(id: String, leaveTime: String){
